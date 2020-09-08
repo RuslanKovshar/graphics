@@ -1,26 +1,56 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Canvas from "./Canvas";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+
+    componentDidMount() {
+        this.draw()
+    }
+
+    draw() {
+        let canvas = document.getElementById('canvas');
+
+        if (canvas.getContext) {
+            let x;
+            let ctx = canvas.getContext('2d');
+
+            const {width, height} = canvas.getBoundingClientRect();
+
+            ctx.beginPath()
+            for (x = 0; x <= width; x += 15) {
+                ctx.moveTo(x + 0.5, 0);
+                ctx.lineTo(x + 0.5, height);
+                console.log(x)
+            }
+
+            for (x = 0; x <= height; x += 15) {
+                ctx.moveTo(0, 0.5 + x);
+                ctx.lineTo(width, 0.5 + x);
+            }
+            ctx.strokeStyle = "black";
+            ctx.stroke();
+            ctx.closePath()
+
+            ctx.beginPath()
+            ctx.moveTo(0, 0.5);
+            ctx.lineTo(width / 2+ 0.5, height / 2 + 0.5);
+            ctx.strokeStyle = "red";
+            ctx.stroke();
+            ctx.closePath()
+
+
+        }
+    }
+
+
+    render() {
+        return (
+            <div className="App">
+                <Canvas/>
+            </div>
+        );
+    }
 }
 
 export default App;
