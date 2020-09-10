@@ -1,6 +1,11 @@
 import React from 'react';
 import './App.css';
 import Canvas from "./Canvas";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Card from "react-bootstrap/Card";
 
 class App extends React.Component {
 
@@ -17,12 +22,9 @@ class App extends React.Component {
         this.state = {
             radius: 50,
             distance: 100,
-            grid: 50
+            grid: 50,
+            hight: 50
         };
-
-        this.handleRadius = this.handleRadius.bind(this);
-        this.handleDistance = this.handleDistance.bind(this);
-        this.handleGrid = this.handleGrid.bind(this);
     }
 
     draw() {
@@ -78,7 +80,7 @@ class App extends React.Component {
 
         //params
         let r = this.state.radius * pixelSize;
-        let circleDistanceFromCenter = this.state.distance * pixelSize;
+        let circleDistanceFromCenter = r + this.state.distance * pixelSize;
         let rightIndent = 1.5 * this.state.radius * pixelSize + circleDistanceFromCenter;
         let topIndent = 2 * this.state.radius * pixelSize;
         let bottomIndent = 1.75 * this.state.radius * pixelSize;
@@ -117,20 +119,24 @@ class App extends React.Component {
         prevX = prevX + length;
         ctx.lineTo(prevX, prevY);
 
+        let hight = r * 0.02 * this.state.hight * pixelSize;
+
         ctx.moveTo(startX + rightIndent, startY - topIndent);
-        ctx.lineTo(startX + rightIndent, startY + bottomIndent);
-        ctx.lineTo(startX - rightIndent, startY + bottomIndent);
+        ctx.lineTo(startX + rightIndent, startY + bottomIndent - hight);
+        ctx.lineTo(startX + (this.state.radius * pixelSize + circleDistanceFromCenter), startY + bottomIndent);
+
+        ctx.lineTo(startX - (this.state.radius * pixelSize + circleDistanceFromCenter), startY + bottomIndent);
+        ctx.lineTo(startX - rightIndent, startY + bottomIndent - hight);
 
         ctx.lineTo(startX - rightIndent, startY - topIndent);
 
-        let hight = 50 * pixelSize;
+        ctx.lineTo(startX - (this.state.radius * pixelSize + circleDistanceFromCenter), startY - topIndent - hight);
 
-        ctx.lineTo(startX - rightIndent, startY - topIndent - hight);
         ctx.lineTo(startX - rightIndent + 1.5 * this.state.radius * pixelSize, startY - topIndent - hight);
         ctx.lineTo(startX - rightIndent + 1.5 * this.state.radius * pixelSize, startY - topIndent);
         ctx.lineTo(startX - rightIndent + 1.5 * this.state.radius * pixelSize + 2 * circleDistanceFromCenter, startY - topIndent);
         ctx.lineTo(startX - rightIndent + 1.5 * this.state.radius * pixelSize + 2 * circleDistanceFromCenter, startY - topIndent - hight);
-        ctx.lineTo(startX - rightIndent + 1.5 * this.state.radius * pixelSize + 2 * circleDistanceFromCenter + 1.5 * this.state.radius * pixelSize, startY - topIndent - hight);
+        ctx.lineTo(startX + (this.state.radius * pixelSize + circleDistanceFromCenter), startY - topIndent - hight);
         ctx.lineTo(startX - rightIndent + 1.5 * this.state.radius * pixelSize + 2 * circleDistanceFromCenter + 1.5 * this.state.radius * pixelSize, startY - topIndent);
 
 
@@ -138,28 +144,57 @@ class App extends React.Component {
         ctx.closePath();
     }
 
-    handleRadius(event) {
-        this.setState({radius: event.target.value});
-    }
-
-    handleDistance(event) {
-        this.setState({distance: event.target.value});
-    }
-
-    handleGrid(event) {
-        let value = event.target.value;
-        if (value > 0)
-            this.setState({grid: value});
+    handle = (e) => {
+        const {name, value} = e.currentTarget;
+        this.setState((p) => ({...p, [name]: value}))
     }
 
     render() {
         return (
-            <div className="App">
-                <input placeholder={"Radius"} type="range" onChange={this.handleRadius}/>
-                <input placeholder={"Distance"} type="range" max={300} onChange={this.handleDistance}/>
-                <input placeholder={"Grid"} type="range" onChange={this.handleGrid}/>
-                <Canvas/>
-            </div>
+            <Container className={"mt-5"}>
+                <Row>
+                    <Col>
+                        <div>
+                            <Card>
+                                <Card.Body>
+                                    <Form>
+                                    <Form.Group>
+                                        <Form.Label>Radius</Form.Label>
+                                        <Form.Control name="radius"
+                                                      type="range"
+                                                      onChange={this.handle}/>
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Distance</Form.Label>
+                                        <Form.Control name="distance"
+                                                      type="range"
+                                                      onChange={this.handle}/>
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Grid</Form.Label>
+                                        <Form.Control name="grid"
+                                                      type="range"
+                                                      min={1}
+                                                      max={200}
+                                                      onChange={this.handle}/>
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Height</Form.Label>
+                                        <Form.Control name="hight"
+                                                      type="range"
+                                                      onChange={this.handle}/>
+                                    </Form.Group>
+                                </Form>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    </Col>
+
+                    <Col>
+                        <Canvas/>
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }
